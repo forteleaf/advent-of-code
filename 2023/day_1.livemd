@@ -1,0 +1,102 @@
+# advent of code
+
+```elixir
+Mix.install([
+  {:kino, "~> 0.12.0"}
+])
+
+input = Kino.Input.textarea("input")
+```
+
+## part 1
+
+```elixir
+calibrations =
+  Kino.Input.read(input)
+  |> String.split("\n")
+```
+
+```elixir
+calibrations
+|> Enum.map(fn calibration ->
+  only_number_string = Regex.replace(~r/[^\d]/, calibration, "")
+  first = only_number_string |> String.at(0)
+  last = only_number_string |> String.at(-1)
+
+  "#{first}#{last}" |> String.to_integer()
+end)
+|> Enum.sum()
+```
+
+## part2
+
+```elixir
+defmodule Day01.Part2 do
+  number_to_int = %{
+    "one" => 1,
+    "two" => 2,
+    "three" => 3,
+    "four" => 4,
+    "five" => 5,
+    "six" => 6,
+    "seven" => 7,
+    "eight" => 8,
+    "nine" => 9
+  }
+
+  def recover(calibration) do
+    do_recover(calibration, [])
+  end
+
+  def recover("", result) do
+    result
+  end
+
+  defp do_recover(calibration, result) do
+    %{
+      "one" => 1,
+      "two" => 2,
+      "three" => 3,
+      "four" => 4,
+      "five" => 5,
+      "six" => 6,
+      "seven" => 7,
+      "eight" => 8,
+      "nine" => 9
+    }
+    |> IO.inspect()
+
+    new_result =
+      case(calibration |> String.starts_with?("one")) do
+        true -> [1 | result]
+        false -> result
+      end
+
+    do_recover(calibration |> String.slice(1..-1), new_result)
+  end
+end
+
+# calibrations
+# |> Enum.map(fn calibration ->
+#   Day01.Part2.recover(calibration)
+# end)
+```
+
+```elixir
+cnt = 1
+
+%{
+  "one" => 1,
+  "two" => 2,
+  "three" => 3,
+  "four" => 4,
+  "five" => 5,
+  "six" => 6,
+  "seven" => 7,
+  "eight" => 8,
+  "nine" => 9
+}
+|> Enum.map(fn ff ->
+  ff["one"]
+end)
+```
