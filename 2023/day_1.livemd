@@ -31,72 +31,55 @@ end)
 ## part2
 
 ```elixir
-defmodule Day01.Part2 do
-  number_to_int = %{
-    "one" => 1,
-    "two" => 2,
-    "three" => 3,
-    "four" => 4,
-    "five" => 5,
-    "six" => 6,
-    "seven" => 7,
-    "eight" => 8,
-    "nine" => 9
-  }
-
+defmodule Day01.Part2.Solve1 do
   def recover(calibration) do
     do_recover(calibration, [])
   end
 
-  def recover("", result) do
+  # 마지막에 돌아가는 함수
+  def do_recover("", result) do
     result
   end
 
   defp do_recover(calibration, result) do
-    %{
-      "one" => 1,
-      "two" => 2,
-      "three" => 3,
-      "four" => 4,
-      "five" => 5,
-      "six" => 6,
-      "seven" => 7,
-      "eight" => 8,
-      "nine" => 9
-    }
+    ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine"]
+    |> Enum.with_index(1)
     |> IO.inspect()
 
     new_result =
-      case(calibration |> String.starts_with?("one")) do
+      case calibration |> String.starts_with?("one") do
         true -> [1 | result]
         false -> result
       end
 
     do_recover(calibration |> String.slice(1..-1), new_result)
   end
+
+  defp digits_word_to_number(digits) do
+    digit_map = %{
+      "one" => "1",
+      "two" => "2",
+      "three" => "3",
+      "four" => "4",
+      "five" => "5",
+      "six" => "6",
+      "seven" => "7",
+      "eight" => "8",
+      "nine" => "9"
+    }
+
+    digits
+    |> Enum.map(fn digit ->
+      cond do
+        Map.has_key?(digit_map, digit) -> digit_map[digit]
+        true -> digit
+      end
+    end)
+  end
 end
 
-# calibrations
-# |> Enum.map(fn calibration ->
-#   Day01.Part2.recover(calibration)
-# end)
-```
-
-```elixir
-cnt = 1
-
-%{
-  "one" => 1,
-  "two" => 2,
-  "three" => 3,
-  "four" => 4,
-  "five" => 5,
-  "six" => 6,
-  "seven" => 7,
-  "eight" => 8,
-  "nine" => 9
-}
-|> Enum.map(fn ff ->
-  ff["one"]
+calibrations
+|> Enum.map(fn calibration ->
+  Day01.Part2.Solve1.recover(calibration)
 end)
 ```
