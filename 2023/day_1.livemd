@@ -13,7 +13,7 @@ input = Kino.Input.textarea("input")
 ```elixir
 calibrations =
   Kino.Input.read(input)
-  |> String.split("\n")
+  |> String.split("\n", trim: true)
 ```
 
 ```elixir
@@ -32,8 +32,16 @@ end)
 
 ```elixir
 defmodule Day01.Part2.Solve1 do
+  @number_words ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine"]
+                |> Enum.with_index(1)
+  @number_strings 1..9 |> Enum.map(&{Integer.to_string(&1), &1})
+
+  @number_matches @number_words ++ @number_strings
+
   def recover(calibration) do
     do_recover(calibration, [])
+    |> Enum.reverse()
+    |> then(&("#{List.first(&1)}#{List.last(&1)}" |> String.to_integer()))
   end
 
   # 마지막에 돌아가는 함수
@@ -41,40 +49,21 @@ defmodule Day01.Part2.Solve1 do
     result
   end
 
-  defp do_recover(calibration, result) do
-    ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine"]
-    |> Enum.with_index(1)
-    |> IO.inspect()
-
+  def do_recover(calibration, result) do
     new_result =
-      case calibration |> String.starts_with?("one") do
-        true -> [1 | result]
-        false -> result
+      @number_matches
+      |> Enum.find_value(fn {number_match, number} ->
+        case calibration |> String.starts_with?(number_match) do
+          true -> number
+          false -> nil
+        end
+      end)
+      |> case do
+        nil -> result
+        number -> [number | result]
       end
 
     do_recover(calibration |> String.slice(1..-1), new_result)
-  end
-
-  defp digits_word_to_number(digits) do
-    digit_map = %{
-      "one" => "1",
-      "two" => "2",
-      "three" => "3",
-      "four" => "4",
-      "five" => "5",
-      "six" => "6",
-      "seven" => "7",
-      "eight" => "8",
-      "nine" => "9"
-    }
-
-    digits
-    |> Enum.map(fn digit ->
-      cond do
-        Map.has_key?(digit_map, digit) -> digit_map[digit]
-        true -> digit
-      end
-    end)
   end
 end
 
@@ -82,4 +71,5 @@ calibrations
 |> Enum.map(fn calibration ->
   Day01.Part2.Solve1.recover(calibration)
 end)
+|> Enum.sum()
 ```
