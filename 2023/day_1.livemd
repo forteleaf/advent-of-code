@@ -39,31 +39,29 @@ defmodule Day01.Part2.Solve1 do
   @number_matches @number_words ++ @number_strings
 
   def recover(calibration) do
-    do_recover(calibration, [])
-    |> Enum.reverse()
-    |> then(&("#{List.first(&1)}#{List.last(&1)}" |> String.to_integer()))
+    [
+      {&String.starts_with?/2, 1..-1},
+      {&String.ends_with?/2, 0..-2}
+    ]
+    |> Enum.map(fn {match_fun, slice_range} ->
+      do_recover(calibration, match_fun, slice_range)
+    end)
+    |> then(fn [first, last] -> "#{first}#{last}" |> String.to_integer() end)
   end
 
-  # 마지막에 돌아가는 함수
-  def do_recover("", result) do
-    result
-  end
-
-  def do_recover(calibration, result) do
-    new_result =
-      @number_matches
-      |> Enum.find_value(fn {number_match, number} ->
-        case calibration |> String.starts_with?(number_match) do
-          true -> number
-          false -> nil
-        end
-      end)
-      |> case do
-        nil -> result
-        number -> [number | result]
+  # 정방향, 역방향
+  def do_recover(calibration, match_fun, slice_range) do
+    @number_matches
+    |> Enum.find_value(fn {number_match, number} ->
+      case calibration |> match_fun.(number_match) do
+        true -> number
+        false -> nil
       end
-
-    do_recover(calibration |> String.slice(1..-1), new_result)
+    end)
+    |> case do
+      nil -> do_recover(calibration |> String.slice(slice_range), match_fun, slice_range)
+      number -> number
+    end
   end
 end
 
