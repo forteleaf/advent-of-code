@@ -1,0 +1,7 @@
+# day_2
+
+## Section
+
+```elixir
+
+```
